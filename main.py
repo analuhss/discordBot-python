@@ -64,11 +64,11 @@ async def beta(ctx:commands.Context):
 #   EMBED (TESTE3, COM THUMB, FOOTER E COLOR)
 @gunter.command()
 async def insta(ctx:commands.Context):
-    embed = discord.Embed(title = "INSTA", description = "segue lá :)")
+    embed = discord.Embed(title = "INSTA", description = "segue lá :)\n       \n        \n        \n         ")
 
 #   IMAGEM
-    imagemInsta = discord.file("whatsappinsta.jpg", "insta.jpg")
-    embed.set_image(url = "attachment://insta.jpg")
+    imagemInsta = discord.File("whatsappinsta.jpeg", "insta.jpeg")
+    embed.set_image(url = "attachment://insta.jpeg")
 
 #   THUMB
     thumb = discord.File("logoInsta.png", "logo.png")
@@ -85,7 +85,7 @@ async def insta(ctx:commands.Context):
 # EMBED COM COMANDOS DO GUNTER
 @gunter.command()
 async def comandos(ctx:commands.Context):
-    embed = discord.Embed(title = """"Meus comandos :)", description = "SEMPRE USAR "!" ANTES\n- Gunter\n - nalu\n - beta\n- insta""")
+    embed = discord.Embed(title = """Meus comandos :)""", description = 'SEMPRE USAR "!" ANTES\n- Gunter\n - nalu\n - beta\n- insta')
 
 #   imagem
     embed.set_image(url = "https://i.pinimg.com/736x/d4/0c/80/d40c80d32ad61f5be78b6650753e442c.jpg")
@@ -94,7 +94,7 @@ async def comandos(ctx:commands.Context):
     embed.set_footer(text = "imagens reais da nalu programando o gunter")
 
 #   color
-    embed.color = discord.Color.white()
+    embed.color = discord.Color.light_theme()
 
     await ctx.reply(embed = embed)
 
