@@ -56,7 +56,7 @@ async def beta(ctx:commands.Context):
     embed = discord.Embed(title = "Beta?", description = "beta é quem me chama, cala boca e não reclama.")
     
 #   imagem do computador
-    imagemArquivo = discord.File("embedBeta.jpg", "beta.jpg")
+    imagemArquivo = discord.File("imagens\embedBeta.jpg", "beta.jpg")
     embed.set_image(url = "attachment://beta.jpg")
 
     await ctx.reply(file = imagemArquivo, embed = embed)
@@ -67,11 +67,11 @@ async def insta(ctx:commands.Context):
     embed = discord.Embed(title = "INSTA", description = "segue lá :)")
 
 #   IMAGEM
-    imagemInsta = discord.File("whatsappinsta.jpeg", "insta.jpeg")
+    imagemInsta = discord.File("imagens\whatsappinsta.jpeg", "insta.jpeg")
     embed.set_image(url = "attachment://insta.jpeg")
 
 #   THUMB
-    thumb = discord.File("logoInsta.png", "logo.png")
+    thumb = discord.File("imagens\logoInsta.png", "logo.png")
     embed.set_thumbnail(url = "attachment://logo.png")
 
 #   FOOTER
@@ -182,7 +182,8 @@ async def membros(ctx:commands.Context):
         elif escolha == "3":
             resposta = "Caramba! Gunter também gosta muito da nalu"
         
-        await interact.response.send_message(resposta)
+#       o ephemeral é para que apenas quem clicar na seleção veja a resposta
+        await interact.response.send_message(resposta, ephemeral = True)
 
 #   plaeceholder: o que está escrito em cima do menu
     menuSelecao = discord.ui.Select(placeholder = "Qual seu membro favorito?")
