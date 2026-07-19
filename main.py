@@ -85,7 +85,7 @@ async def insta(ctx:commands.Context):
 # EMBED COM COMANDOS DO GUNTER
 @gunter.command()
 async def comandos(ctx:commands.Context):
-    embed = discord.Embed(title = """Meus comandos :)""", description = 'SEMPRE USAR "!" ANTES\n- Gunter\n - nalu\n - beta\n- insta\n- surpresa\n- segredo\n- anna\n- farm')
+    embed = discord.Embed(title = """Meus comandos :)""", description = 'SEMPRE USAR "!" ANTES\n- Gunter\n - nalu\n - beta\n- insta\n- surpresa\n- segredo\n- anna\n- farm\n- BOTOES')
 
 #   imagem
     embed.set_image(url = "https://i.pinimg.com/736x/d4/0c/80/d40c80d32ad61f5be78b6650753e442c.jpg")
