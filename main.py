@@ -64,7 +64,7 @@ async def beta(ctx:commands.Context):
 #   EMBED (TESTE3, COM THUMB, FOOTER E COLOR)
 @gunter.command()
 async def insta(ctx:commands.Context):
-    embed = discord.Embed(title = "INSTA", description = "segue lá :)\n       \n        \n        \n         ")
+    embed = discord.Embed(title = "INSTA", description = "segue lá :)")
 
 #   IMAGEM
     imagemInsta = discord.File("whatsappinsta.jpeg", "insta.jpeg")
@@ -85,7 +85,7 @@ async def insta(ctx:commands.Context):
 # EMBED COM COMANDOS DO GUNTER
 @gunter.command()
 async def comandos(ctx:commands.Context):
-    embed = discord.Embed(title = """Meus comandos :)""", description = 'SEMPRE USAR "!" ANTES\n- Gunter\n - nalu\n - beta\n- insta')
+    embed = discord.Embed(title = """Meus comandos :)""", description = 'SEMPRE USAR "!" ANTES\n- Gunter\n - nalu\n - beta\n- insta\n- surpresa\n- segredo\n- anna\n- farm')
 
 #   imagem
     embed.set_image(url = "https://i.pinimg.com/736x/d4/0c/80/d40c80d32ad61f5be78b6650753e442c.jpg")
@@ -96,6 +96,77 @@ async def comandos(ctx:commands.Context):
 #   color
     embed.color = discord.Color.light_theme()
 
-    await ctx.reply(embed = embed)
+    await ctx.send(embed = embed)
+
+#   TESTE DE BOTÃO
+@gunter.command()
+async def surpresa(ctx:commands.Context):
+#   configuração da resposta do botão
+    async def respostaBotao(interact:discord.Interaction):
+        await interact.response.send_message("come aloong with mee")
+
+#   configuração da aparência do botão
+    view = discord.ui.View()
+    botao = discord.ui.Button(label = 'clique aqui', style = discord.ButtonStyle.green) # função style: muda a aparência do botão
+
+#   resposta do botão:
+    botao.callback = respostaBotao
+
+    view.add_item(botao)
+    await ctx.reply(view = view)
+
+#   BOTAO EPHEMERAL (Só quem apertou o botão vê a mensagem)
+@gunter.command()
+async def segredo(ctx:commands.Context):
+    async def respostaBotao(interact:discord.Interaction):
+        await interact.response.send_message("""beijos da nalu :)""", ephemeral= True)
+
+    view = discord.ui.View()
+    botao = discord.ui.Button(label = "clique aqui", style = discord.ButtonStyle.green)
+
+    botao.callback = respostaBotao
+
+    view.add_item(botao)
+    await ctx.reply(view = view)
+
+
+#   BOTÃO COM MAIS DE UMA RESPOSTA
+@gunter.command()
+async def anna(ctx:commands.Context):
+    async def respostaBotao(interact:discord.Interaction):
+        await interact.response.send_message("oque?")
+        await interact.followup.send("você finaliza meus...")
+        await interact.followup.send("SANDUÍCHES")
+        await interact.followup.send('''era o que eu ia dizer''')
+
+    view = discord.ui.View()
+    botao = discord.ui.Button(label = "É MEIO DOIDO", style = discord.ButtonStyle.green)
+    botao.callback = respostaBotao
+
+    view.add_item(botao)
+    await ctx.reply (view = view)
+
+#   BOTÃO COM URL
+@gunter.command()
+async def farm(ctx:commands.Context):
+    view = discord.ui.View()
+    botao = discord.ui.Button(label = 'AURA MÁXIMA', style = discord.ButtonStyle.danger, url = "https://www.youtube.com/watch?v=7IFvoaH44Is")
+
+    view.add_item(botao)
+    await ctx.reply(view = view)
+
+#   VIEW COM MAIS DE UM BOTÃO
+@gunter.command()
+async def BOTOES(ctx:commands.Context):
+
+    view = discord.ui.View()
+    botao1 = discord.ui.Button(label = "spotify", style = discord.ButtonStyle.green, url = "https://open.spotify.com/user/31mlgmrjumt75rhyfqoqxzidrqky?si=IxHS8BK-RaWqfC6P0MnVCA&utm_source=copy-link")
+    botao2 = discord.ui.Button(label = "insta", style = discord.ButtonStyle.red, url = "https://www.instagram.com/nalucinante?igsh=MWhiZ2QwM3oxa21oZw==")
+    botao3 = discord.ui.Button(label = "tiks", style = discord.ButtonStyle.grey, url = "https://www.tiktok.com/@nalucinante?_r=1&_t=ZS-989SCNOmVE1")
+
+    view.add_item(botao1)
+    view.add_item(botao2)
+    view.add_item(botao3)
+    await ctx.reply(view = view)
 
 gunter.run(meuToken)
