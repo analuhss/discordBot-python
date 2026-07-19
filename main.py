@@ -169,4 +169,33 @@ async def BOTOES(ctx:commands.Context):
     view.add_item(botao3)
     await ctx.reply(view = view)
 
+#   MENU DE SELEÇÃO
+@gunter.command()
+async def membros(ctx:commands.Context):
+#   resposta do bot:
+    async def selecaoResposta(interact:discord.Interaction):
+        escolha = interact.data['values'][0]
+        if escolha == "1":
+            resposta = "Que ótima escolha, a nalu é realmente uma boa amiga"
+        elif escolha == "2":
+            resposta = "Bom saber, gunter fica feliz com essa resposta"
+        elif escolha == "3":
+            resposta = "Caramba! Gunter também gosta muito da nalu"
+        
+        await interact.response.send_message(resposta)
+
+#   plaeceholder: o que está escrito em cima do menu
+    menuSelecao = discord.ui.Select(placeholder = "Qual seu membro favorito?")
+#   opções:
+    opcoes = [
+        discord.SelectOption(label = "Nalu", value = "1"),
+        discord.SelectOption(label = "Nalu", value = "2"),
+        discord.SelectOption(label = "Nalu", value = "3")
+    ]
+    menuSelecao.options = opcoes
+    menuSelecao.callback = selecaoResposta
+    view = discord.ui.View()
+    view.add_item(menuSelecao)
+    await ctx.send (view = view)
+
 gunter.run(meuToken)
