@@ -15,7 +15,7 @@
 <br>
 
 > [!Note]
->      "**Gunter**" é o nome do icônico pinguim do desenho animado "**Hora de Aventura**"
+> **Curiosidade:** "**Gunter**" é o nome do icônico pinguim do desenho animado "**Hora de Aventura**"
 
 <br>
 
@@ -34,15 +34,15 @@
 
 <br>
 
-<h3>
+<h2>
             &nbsp;&nbsp;&nbsp;&nbsp;CONTATO:
-</h3>
+</h2>
+
 
 <br>
 
-<p>
+<p align="center">
             <a href="https://www.linkedin.com/in/ana-luiza-santos-guimar%C3%A3es-0aa06b250/" target="_blank" rel="noopener noreferrer">
-                        <img src=""https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/linkedin/linkedin-original.svg" widht="100 height="100"/>
-          ">
+                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/linkedin/linkedin-original.svg" widht="50" height="50"/>
             </a>
 </p>
