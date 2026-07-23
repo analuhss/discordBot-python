@@ -16,6 +16,27 @@ gunter = commands.Bot(command_prefix = "!", intents = permissoes)
 @gunter.event
 async def on_ready():
     print("Gunter funcionando")
+#   MENSAGEM NO CANAL QUANDO ESTIVER FUNCIONANDO
+    canalID = 1427064418356695150
+    canal = gunter.get_channel(canalID)
+
+    if canal:
+        await canal.send('''ESTOU FUNCIONANDOO\npara ver os meus comandos digite "!comandos" :)''')
+
+#   EMBED DE COMANDOS OFICIAAIS
+@gunter.command()
+async def comandos(ctx:commands.Context):
+    emoji = gunter.get_emoji(1450437319004917801)
+    embed = discord.Embed (title= f"COMANDOOS {emoji}", description= "aqui era p estar os comandos ne")
+
+    embed.color = discord.Color.light_theme()
+
+    embed.set_image(url = "https://i.pinimg.com/control1/1200x/74/37/12/743712382dfc638fa1053a85c8e5870a.jpg")
+
+    embed.set_footer(text="scripted by: nalu")
+
+    await ctx.send(embed= embed)
+
 
 #   COMANDO BÁSICO DE RESPOSTA
 @gunter.command()
@@ -82,9 +103,9 @@ async def insta(ctx:commands.Context):
 
     await ctx.reply(files = [imagemInsta, thumb], embed = embed)
 
-# EMBED COM COMANDOS DO GUNTER
+# EMBED COM COMANDOS INICIAIS DO GUNTER
 @gunter.command()
-async def comandos(ctx:commands.Context):
+async def programadora(ctx:commands.Context):
     embed = discord.Embed(title = """Meus comandos :)""", description = 'SEMPRE USAR "!" ANTES\n- Gunter\n - nalu\n - beta\n- insta\n- surpresa\n- segredo\n- anna\n- farm\n- BOTOES')
 
 #   imagem
@@ -198,5 +219,6 @@ async def membros(ctx:commands.Context):
     view = discord.ui.View()
     view.add_item(menuSelecao)
     await ctx.send (view = view)
+
 
 gunter.run(meuToken)
