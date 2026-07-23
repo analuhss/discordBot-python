@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 import meuToken
 from meuToken import meuToken
+from discord import app_commands
 
 #   PERMISSOES
 permissoes = discord.Intents.default()
@@ -16,16 +17,31 @@ gunter = commands.Bot(command_prefix = "!", intents = permissoes)
 @gunter.event
 async def on_ready():
     print("Gunter funcionando")
+
 #   MENSAGEM NO CANAL QUANDO ESTIVER FUNCIONANDO
     canalID = 1427064418356695150
     canal = gunter.get_channel(canalID)
 
     if canal:
-        await canal.send('''ESTOU FUNCIONANDOO\npara ver os meus comandos digite "!comandos" :)''')
+        embed = discord.Embed(title= "Estou funcionando", description= 'todos os comandos os meus comandos estão funcionando\n - Lista de comandos = usar "/"')
+
+        embed.color = discord.Color.light_embed()
+
+        embed.set_image(url = "https://i.pinimg.com/736x/d4/0c/80/d40c80d32ad61f5be78b6650753e442c.jpg")
+
+        embed.set_footer(text="imagens reais da nalu programando o gunter")
+
+        await canal.send(embed = embed)
+
+#   Para que os slash commands sejam conectados apenas uma vez
+class Gunter(commands.Bot):
+    async def setup_hook(self):
+        await self.tree.sync()
+        print('Comandos slash, sincronizados')
 
 #   EMBED DE COMANDOS OFICIAAIS
-@gunter.command()
-async def comandos(ctx:commands.Context):
+@gunter.tree.command(name= "comandos", description="Todos os comandos do gunter")
+async def comandos(interact: discord.Interaction):
     emoji = gunter.get_emoji(1450437319004917801)
     embed = discord.Embed (title= f"COMANDOOS {emoji}", description= "aqui era p estar os comandos ne")
 
@@ -35,7 +51,7 @@ async def comandos(ctx:commands.Context):
 
     embed.set_footer(text="scripted by: nalu")
 
-    await ctx.send(embed= embed)
+    await interact.response.send_message(embed= embed, ephemeral= True)
 
 
 #   COMANDO BÁSICO DE RESPOSTA
