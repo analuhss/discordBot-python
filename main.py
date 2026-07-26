@@ -16,6 +16,7 @@ gunter = commands.Bot(command_prefix = "!", intents = permissoes)
 #   QUANDO O GUNTER LIGAR
 @gunter.event
 async def on_ready():
+    await gunter.tree.sync()
     print("Gunter funcionando")
 
 #   MENSAGEM NO CANAL QUANDO ESTIVER FUNCIONANDO
@@ -34,10 +35,10 @@ async def on_ready():
         await canal.send(embed = embed)
 
 #   Para que os slash commands sejam conectados apenas uma vez
-class Gunter(commands.Bot):
-    async def setup_hook(self):
-        await self.tree.sync()
-        print('Comandos slash, sincronizados')
+# class Gunter(commands.Bot):
+#     async def setup_hook(self):
+#         await self.tree.sync()
+#         print('Comandos slash, sincronizados')
 
 #   EMBED DE COMANDOS OFICIAAIS
 @gunter.tree.command(name= "comandos", description="Todos os comandos do gunter")
@@ -235,6 +236,5 @@ async def membros(ctx:commands.Context):
     view = discord.ui.View()
     view.add_item(menuSelecao)
     await ctx.send (view = view)
-
 
 gunter.run(meuToken)
