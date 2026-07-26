@@ -20,7 +20,7 @@ async def on_ready():
     print("Gunter funcionando")
 
 #   MENSAGEM NO CANAL QUANDO ESTIVER FUNCIONANDO
-    canalID = 1427064418356695150
+    canalID = 1526599234005241977
     canal = gunter.get_channel(canalID)
 
     if canal:
@@ -94,7 +94,7 @@ async def beta(ctx:commands.Context):
     embed = discord.Embed(title = "Beta?", description = "beta é quem me chama, cala boca e não reclama.")
     
 #   imagem do computador
-    imagemArquivo = discord.File("imagens\embedBeta.jpg", "beta.jpg")
+    imagemArquivo = discord.File("Documents\\botDiscord-python\\imagens\\embedBeta", "beta.jpg")
     embed.set_image(url = "attachment://beta.jpg")
 
     await ctx.reply(file = imagemArquivo, embed = embed)
@@ -105,11 +105,11 @@ async def insta(ctx:commands.Context):
     embed = discord.Embed(title = "INSTA", description = "segue lá :)")
 
 #   IMAGEM
-    imagemInsta = discord.File("imagens\whatsappinsta.jpeg", "insta.jpeg")
+    imagemInsta = discord.File("Documents\\botDiscord-python\\imagens\\whatsappinsta.jpeg", "insta.jpeg")
     embed.set_image(url = "attachment://insta.jpeg")
 
 #   THUMB
-    thumb = discord.File("imagens\logoInsta.png", "logo.png")
+    thumb = discord.File("Documents\\botDiscord-python\\imagens\\logoInsta.png", "logo.png")
     embed.set_thumbnail(url = "attachment://logo.png")
 
 #   FOOTER
@@ -236,5 +236,13 @@ async def membros(ctx:commands.Context):
     view = discord.ui.View()
     view.add_item(menuSelecao)
     await ctx.send (view = view)
+
+#   COMANDO QUE DÁ PEGA CARGO
+@gunter.command()
+async def Betty(ctx:commands.Context):
+    membro = ctx.author
+    cargoGelado = discord.utils.get(ctx.guild.roles, name='rei gelado')
+
+    await membro.add_roles(cargoGelado)
 
 gunter.run(meuToken)
