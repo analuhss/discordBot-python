@@ -4,6 +4,8 @@ from discord.ext import commands
 import meuToken
 from meuToken import meuToken
 from discord import app_commands
+import sqlite3
+import time
 
 #   PERMISSOES
 permissoes = discord.Intents.default()
@@ -34,11 +36,77 @@ async def on_ready():
 
         await canal.send(embed = embed)
 
-#   Para que os slash commands sejam conectados apenas uma vez
-# class Gunter(commands.Bot):
-#     async def setup_hook(self):
-#         await self.tree.sync()
-#         print('Comandos slash, sincronizados')
+#    CONFIGURAÇÃO DO DICIONÁRIO PARA EVITAR SPAM DE XP
+cooldowns = {}
+
+def _iniciar_banco():
+#   isso cria a tabela se ela não existir
+    conn = sqlite3.connect("niveis.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS usuarios(
+    id TEXT PRIMARY KEY
+    xp INTEGER DEFAULT 0,
+    nivel INTEGER DEFAULT 1)""")
+
+@gunter.event
+async def on_message(message):
+
+    if message.author.bot:
+        return
+
+    usuarioID = str(message.author.id)
+    tempoAtual = time.time()
+
+#   VERIFICA O COOLDOWN PARA EVITAR MENSAGENS DE SPAM REPETIDAS
+    if usuarioID not in cooldowns or (tempoAtual - cooldowns[usuarioID]) > 60: cooldowns[usuarioID] = tempoAtual
+
+    conn = sqlite3.connect("niveis.db")
+    cursor = conn.cursor()
+
+#   BUSCA O USUÁRIO OU CRIA UM REGISTRO DELE
+    cursor.execute("SELECT xp, nivel FROM usuarios WHERE id = ?", (usuarioID,))
+    resultado = cursor.fetchone()
+
+#    RESULTADO VERDADEIRO:
+    if resultado is None:
+        cursor.execute("INSERT INTO usuarios (id, xp, nivel) VALUES (?, ?, ?)" (usuarioID, 15, 1))
+        xp, nivel = 15, 1
+    else:
+        xpNecessario = nivel * 100 
+
+        if xp >= xpNecessario:
+            nivel += 1
+            xp = 0 # rese0ta o atual ou subtrai o necessário
+
+            await message.channel.send(f'BOA {message.author.mention}, SUBIU PARA O **NIVEL {nivel}**!')
+
+        cursor.execute("UPDATE usuarios SET xp = ?, nivel = ?WHERE id = ?", (xp, nivel, usuarioID))
+
+    conn.autocommit
+    conn.close()
+
+    await gunter.process_commands(message)
+
+#   RANKSS
+@gunter.tree.command(name= "rank", description= "mostra o seu nível atual")
+async def rank(ctx:commands.Context):
+
+    usuarioID = str(ctx.author.id)
+
+    conn = sqlite3.connect("niveis.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT xp, nivel FROM usuarios WHERE id = ?", (usuarioID))
+    resultado = cursor.fetchone()
+    conn.close()
+
+    if resultado is None:
+        xp, nivel = 0, 1
+    else:
+        xp, nivel = resultado
+
+    xp_necessario = nivel * 100 
+    await ctx.send(f"📊 **{ctx.author.name}**\n⭐ Nível: {nivel}\n✨ XP: {xp}/{xp_necessario}")
 
 #   EMBED DE COMANDOS OFICIAAIS
 @gunter.tree.command(name= "comandos", description="Todos os comandos do gunter")
