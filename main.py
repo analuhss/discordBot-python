@@ -8,8 +8,9 @@ import sqlite3
 import time
 import random
 
-conexao = sqlite3.connect("sistemadexp.db")
-cursor = conexao.cursor()
+#   SQL
+conn = sqlite3.connect("sistemadexp.db")
+cursor = conn.cursor()
 
 #   PERMISSOES
 permissoes = discord.Intents.default()
@@ -41,7 +42,7 @@ async def on_ready():
 
         await canal.send(embed = embed)
 
-#   TABELA PARA XP
+#  TABELA PARA XP
 cursor.execute("""CREATE TABLE IF NOT EXISTS usuarios (
                 id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                 usuario TEXT NOT NULL,
@@ -49,12 +50,74 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS usuarios (
                 nivel INT NOT NULL)""")
 
 #   SISTEMA DE XP
-@gunter.event()
-async def on_message(interact:discord.Interaction):
-    usuario = interact.user
-    xp = 0
-    nivel = 1
-    soma = xp
+#organização:
+cooldowns = {}
+COOLDOWN_SEGUNDOS = 60
+xpImagem = 15
+
+#   VERIFICA SE TEM IMAGEM - QUE TAMBEM CONTAM COMO XP
+def temImagem(message):
+    if not message.attachments:
+        return False
+    extensoesImangem = (".png", ".jpg", ".jpeg", ".gif", ".webp")
+
+    for anexo in message.attachments:
+        if anexo.filename.lower().endswith(extensoesImangem):
+            return True
+    return False
+
+
+@gunter.event
+async def on_message(message):
+    if message.author.bot:
+        return
+
+    userID = str(message.author.id)
+    agora = time.time()
+
+    if userID in cooldowns and agora - cooldowns[userID] < COOLDOWN_SEGUNDOS:
+        pass
+    else:
+        cooldowns[userID] = agora
+        xpGanho = 0
+
+        if temImagem(message):
+            xpGanho += xpImagem
+
+        # xp baseado no tamanho da mensagem
+        tamanhoMensagem = len(message.content)
+        xpGanho += tamanhoMensagem
+
+        if xpGanho == 0:
+            await gunter.process_commands(message)
+            return
+
+        cursor.execute("""SELECT xp, nivel FROM usuarios
+                    WHERE usuario = ?""",
+                    (userID,))
+        resultado = cursor.fetchone()
+
+        if resultado is None:
+            cursor.execute("""INSERT INTO usuarios (usuario, xp, nivel)
+                            VALUES (?, ?, ?)""",
+                            (userID, xpGanho, 1))
+        else:
+            xpAtual, nivelAtual = resultado
+            novoXP = xpAtual + xpGanho
+            novoNivel = novoXP // 100 + 1
+
+            cursor.execute("""UPDATE usuarios SET xp = ?, nivel = ?
+                            WHERE usuario = ?""",
+                            (novoXP, novoNivel, userID))
+
+            if novoNivel > nivelAtual:
+                await message.channel.send(
+                    f"BOAAA {message.author.mention} SUBIU PARA O NÍVEL **{novoNivel}**"
+                )
+
+        conn.commit()
+
+    await gunter.process_commands(message)
 
 #   EMBED DE COMANDOS OFICIAAIS
 @gunter.tree.command(name= "comandos", description="Todos os comandos do gunter")
