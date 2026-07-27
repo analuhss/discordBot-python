@@ -64,13 +64,20 @@ async def on_message(message):
     conn = sqlite3.connect("niveis.db")
     cursor = conn.cursor()
 
+    cursor.execute('''CREATE TABLE IF NOT EXISTS usuarios (
+    id TEXT PRIMARY KEY,
+    xp INTEGER
+    nivel INTEGER)''')
+
+    conn.commit()
+
 #   BUSCA O USUÁRIO OU CRIA UM REGISTRO DELE
     cursor.execute("SELECT xp, nivel FROM usuarios WHERE id = ?", (usuarioID,))
     resultado = cursor.fetchone()
 
 #    RESULTADO VERDADEIRO:
     if resultado is None:
-        cursor.execute("INSERT INTO usuarios (id, xp, nivel) VALUES (?, ?, ?)" (usuarioID, 15, 1))
+        cursor.execute("INSERT INTO usuarios (id, xp, nivel) VALUES (?, ?, ?)", (usuarioID, 15, 1))
         xp, nivel = 15, 1
     else:
         xpNecessario = nivel * 100 
@@ -90,9 +97,9 @@ async def on_message(message):
 
 #   RANKSS
 @gunter.tree.command(name= "rank", description= "mostra o seu nível atual")
-async def rank(ctx:commands.Context):
+async def rank(interact:discord.Interaction):
 
-    usuarioID = str(ctx.author.id)
+    usuarioID = str(interact.user.id)
 
     conn = sqlite3.connect("niveis.db")
     cursor = conn.cursor()
@@ -106,7 +113,7 @@ async def rank(ctx:commands.Context):
         xp, nivel = resultado
 
     xp_necessario = nivel * 100 
-    await ctx.send(f"📊 **{ctx.author.name}**\n⭐ Nível: {nivel}\n✨ XP: {xp}/{xp_necessario}")
+    await interact.response.send_message(f"📊 **{usuarioID}**\n⭐ Nível: {nivel}\n✨ XP: {xp}/{xp_necessario}")
 
 #   EMBED DE COMANDOS OFICIAAIS
 @gunter.tree.command(name= "comandos", description="Todos os comandos do gunter")
