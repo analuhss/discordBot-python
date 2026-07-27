@@ -6,6 +6,7 @@ from meuToken import meuToken
 from discord import app_commands
 import sqlite3
 import time
+import random
 
 conexao = sqlite3.connect("sistemadexp.db")
 cursor = conexao.cursor()
@@ -46,6 +47,14 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS usuarios (
                 usuario TEXT NOT NULL,
                 xp INT NOT NULL,
                 nivel INT NOT NULL)""")
+
+#   SISTEMA DE XP
+@gunter.event()
+async def on_message(interact:discord.Interaction):
+    usuario = interact.user
+    xp = 0
+    nivel = 1
+    soma = xp
 
 #   EMBED DE COMANDOS OFICIAAIS
 @gunter.tree.command(name= "comandos", description="Todos os comandos do gunter")
