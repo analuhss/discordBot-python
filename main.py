@@ -7,6 +7,9 @@ from discord import app_commands
 import sqlite3
 import time
 
+conexao = sqlite3.connect("sistemadexp.db")
+cursor = conexao.cursor()
+
 #   PERMISSOES
 permissoes = discord.Intents.default()
 permissoes.message_content = True
@@ -20,6 +23,7 @@ gunter = commands.Bot(command_prefix = "!", intents = permissoes)
 async def on_ready():
     await gunter.tree.sync()
     print("Gunter funcionando")
+
 
 #   MENSAGEM NO CANAL QUANDO ESTIVER FUNCIONANDO
     canalID = 1526599234005241977
@@ -36,84 +40,12 @@ async def on_ready():
 
         await canal.send(embed = embed)
 
-#    CONFIGURAÇÃO DO DICIONÁRIO PARA EVITAR SPAM DE XP
-cooldowns = {}
-
-def _iniciar_banco():
-#   isso cria a tabela se ela não existir
-    conn = sqlite3.connect("niveis.db")
-    cursor = conn.cursor()
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS usuarios(
-    id TEXT PRIMARY KEY
-    xp INTEGER DEFAULT 0,
-    nivel INTEGER DEFAULT 1)""")
-
-@gunter.event
-async def on_message(message):
-
-    if message.author.bot:
-        return
-
-    usuarioID = str(message.author.id)
-    tempoAtual = time.time()
-
-#   VERIFICA O COOLDOWN PARA EVITAR MENSAGENS DE SPAM REPETIDAS
-    if usuarioID not in cooldowns or (tempoAtual - cooldowns[usuarioID]) > 60: cooldowns[usuarioID] = tempoAtual
-
-    conn = sqlite3.connect("niveis.db")
-    cursor = conn.cursor()
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS usuarios (
-    id TEXT PRIMARY KEY,
-    xp INTEGER
-    nivel INTEGER)''')
-
-    conn.commit()
-
-#   BUSCA O USUÁRIO OU CRIA UM REGISTRO DELE
-    cursor.execute("SELECT xp, nivel FROM usuarios WHERE id = ?", (usuarioID,))
-    resultado = cursor.fetchone()
-
-#    RESULTADO VERDADEIRO:
-    if resultado is None:
-        cursor.execute("INSERT INTO usuarios (id, xp, nivel) VALUES (?, ?, ?)", (usuarioID, 15, 1))
-        xp, nivel = 15, 1
-    else:
-        xpNecessario = nivel * 100 
-
-        if xp >= xpNecessario:
-            nivel += 1
-            xp = 0 # rese0ta o atual ou subtrai o necessário
-
-            await message.channel.send(f'BOA {message.author.mention}, SUBIU PARA O **NIVEL {nivel}**!')
-
-        cursor.execute("UPDATE usuarios SET xp = ?, nivel = ?WHERE id = ?", (xp, nivel, usuarioID))
-
-    conn.autocommit
-    conn.close()
-
-    await gunter.process_commands(message)
-
-#   RANKSS
-@gunter.tree.command(name= "rank", description= "mostra o seu nível atual")
-async def rank(interact:discord.Interaction):
-
-    usuarioID = str(interact.user.id)
-
-    conn = sqlite3.connect("niveis.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT xp, nivel FROM usuarios WHERE id = ?", (usuarioID))
-    resultado = cursor.fetchone()
-    conn.close()
-
-    if resultado is None:
-        xp, nivel = 0, 1
-    else:
-        xp, nivel = resultado
-
-    xp_necessario = nivel * 100 
-    await interact.response.send_message(f"📊 **{usuarioID}**\n⭐ Nível: {nivel}\n✨ XP: {xp}/{xp_necessario}")
+#   TABELA PARA XP
+cursor.execute("""CREATE TABLE IF NOT EXISTS usuarios (
+                id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                usuario TEXT NOT NULL,
+                xp INT NOT NULL,
+                nivel INT NOT NULL)""")
 
 #   EMBED DE COMANDOS OFICIAAIS
 @gunter.tree.command(name= "comandos", description="Todos os comandos do gunter")
