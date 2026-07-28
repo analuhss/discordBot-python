@@ -118,7 +118,7 @@ async def on_message(message):
                 embed = discord.Embed(title= f"SUBIU DE NÍVEL {emojiTitle}", description=f"Boaa {message.author.mention}, subiu para o **{novoNivel}**")
                 
                 embed.color = discord.Color.light_theme()
-                embed.set_image(url="https://br.pinterest.com/pin/32017847347719597/")
+                embed.set_image(url="https://br.pinterest.com/pin/311733605431742882/")
                 embed.set_footer(text= f"continue conversando para subir de nível {emojifooter}")
                 
                 await message.channel.send(embed = embed)
@@ -127,7 +127,39 @@ async def on_message(message):
 
     await gunter.process_commands(message)
 
+@gunter.tree.command(name="nivel", description="mostra seu nível atual e xp")
+async def nivel(interact: discord.Interaction):
 
+    userID = str(interact.user.id)
+
+    cursor.execute("""SELECT xp, nivel
+                    FROM usuarios
+                    WHERE usuario = ?""", (userID,))
+
+    resultado = cursor.fetchone()
+
+    if resultado is None:
+        embed = discord.Embed(title="Nunca te vi por aqui", description="Por isso, você ainda não tem xp")
+        embed.color =  discord.Color.light_theme()
+        embed.footer(text="começe a mandar mensagens para obter xp :)")
+
+        await interact.response.send_message(embed = embed, ephemeral = True)
+
+        return
+
+    xp, nivel = resultado
+
+    xpProximoNivel = nivel * 100
+    xpFaltando = xpProximoNivel - xp
+
+    embed = discord.Embed(title= f"NÍVEL DE {interact.user.display_name}")
+    embed.set_thumbnail (url= interact.user.display_avatar.url)
+
+    embed.add_field(name="Nível", value=str(nivel), inline=True)
+    embed.add_field(name="XP", value=str(xp), inline=True)
+    embed.add_field(name="Quanto falta para o próximo nível?", value=f"{xpFaltando} XP", inline = False)
+
+    await interact.response.send_message(embed = embed)
 
 #   EMBED DE COMANDOS OFICIAAIS
 @gunter.tree.command(name= "comandos", description="Todos os comandos do gunter")
