@@ -6,7 +6,8 @@ from meuToken import meuToken
 from discord import app_commands
 import sqlite3
 import time
-import random
+import easy_pil
+from easy_pil import Editor, font
 
 #   SQL
 conn = sqlite3.connect("sistemadexp.db")
