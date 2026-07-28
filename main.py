@@ -111,9 +111,17 @@ async def on_message(message):
                             (novoXP, novoNivel, userID))
 
             if novoNivel > nivelAtual:
-                await message.channel.send(
-                    f"BOAAA {message.author.mention} SUBIU PARA O NÍVEL **{novoNivel}**"
-                )
+
+                emojiTitle = gunter.get_emoji(1451737074536288439)
+                emojifooter = gunter.get_emoji(1450437319004917801)
+
+                embed = discord.Embed(title= f"SUBIU DE NÍVEL {emojiTitle}", description=f"Boaa {message.author.mention}, subiu para o **{novoNivel}**")
+                
+                embed.color = discord.Color.light_theme()
+                embed.set_image(url="https://br.pinterest.com/pin/32017847347719597/")
+                embed.set_footer(text= f"continue conversando para subir de nível {emojifooter}")
+                
+                await message.channel.send(embed = embed)
 
         conn.commit()
 
