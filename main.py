@@ -127,6 +127,8 @@ async def on_message(message):
 
     await gunter.process_commands(message)
 
+
+
 #   EMBED DE COMANDOS OFICIAAIS
 @gunter.tree.command(name= "comandos", description="Todos os comandos do gunter")
 async def comandos(interact: discord.Interaction):
