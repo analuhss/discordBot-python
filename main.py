@@ -47,6 +47,7 @@ async def on_ready():
 #  TABELA PARA XP
 cursor.execute("""CREATE TABLE IF NOT EXISTS usuarios (
                 id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL,
                 usuario TEXT NOT NULL,
                 xp INT NOT NULL,
                 nivel INT NOT NULL)""")
@@ -74,6 +75,7 @@ async def on_message(message):
     if message.author.bot:
         return
 
+    nome = str(message.author.display_name)
     userID = str(message.author.id)
     agora = time.time()
 
@@ -100,9 +102,9 @@ async def on_message(message):
         resultado = cursor.fetchone()
 
         if resultado is None:
-            cursor.execute("""INSERT INTO usuarios (usuario, xp, nivel)
-                            VALUES (?, ?, ?)""",
-                            (userID, xpGanho, 1))
+            cursor.execute("""INSERT INTO usuarios (nome, usuario, xp, nivel)
+                            VALUES (?, ?, ?, ?)""",
+                            (nome, userID, xpGanho, 1))
         else:
             xpAtual, nivelAtual = resultado
             novoXP = xpAtual + xpGanho
