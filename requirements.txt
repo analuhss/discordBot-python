@@ -1,3 +1,4 @@
 discord.py
 git+https://github.com/analuhss/discordBot-python
 pip install discord.py
+pip install easy-pil
