@@ -147,10 +147,9 @@ async def nivel(interact: discord.Interaction):
     if resultado is None:
         embed = discord.Embed(title="Nunca te vi por aqui", description="Por isso, você ainda não tem xp")
         embed.color =  discord.Color.light_theme()
-        embed.footer(text="começe a mandar mensagens para obter xp :)")
+        embed.set_footer(text="começe a mandar mensagens para obter xp :)")
 
         await interact.response.send_message(embed = embed, ephemeral = True)
-
         return
 
     xp, nivel = resultado
@@ -166,22 +165,22 @@ async def nivel(interact: discord.Interaction):
 
 #   FOTO DO USUÁRIO
     avatarBytes = await interact.user.display_avatar.read()
-    perfil = Editor(io.BytesIO(avatarBytes).rezise(160, 160)).circle_image()
-    editor.paste(perfil, (30, 220 // 2 - 80))
+    perfil = Editor(avatarBytes).resize((160, 160)).circle_image()
+    editor.paste(perfil, (30, 200 // 2 - 80))
 
 #   FONTES
     fonteDestaque = font.poppins(size=40, variant="bold")
     fonte = font.poppins(size=25, variant="regular")
 
 #   NOME DO USUÁRIO
-    editor.text((240, 40), interact.user.display_name, color="white")
+    editor.text((240, 40), interact.user.display_name, color="white", font=fonteDestaque)
 
 #   NÍVEL E XP ATUAL
     editor.text((220, 100), f"Nível {nivel}", color="white", font=fonte)
     editor.text((22, 140), f"{xp} / {xpProximoNivel} XP", color="white", font=fonte)
 
 #   CONTORNO DA BARRA DE XP
-    editor.rectangle((220, 180), width=500, height=500, outline="white", stroke_width=3)
+    editor.rectangle((220, 180), width=500, height=30, outline="white", stroke_width=3)
 
 #   PREENCHIMENTO DA BARRA = XP ATUAL
     editor.bar(
