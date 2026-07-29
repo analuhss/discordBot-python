@@ -7,7 +7,8 @@ from discord import app_commands
 import sqlite3
 import time
 import easy_pil
-from easy_pil import Editor, font
+from easy_pil import Editor, font, Canvas
+import io
 
 #   SQL
 conn = sqlite3.connect("sistemadexp.db")
@@ -128,6 +129,10 @@ async def on_message(message):
 
     await gunter.process_commands(message)
 
+
+
+#   SLASH COMMAND PARA MOSTRAR NÍVEL
+
 @gunter.tree.command(name="nivel", description="mostra seu nível atual e xp")
 async def nivel(interact: discord.Interaction):
 
@@ -152,15 +157,50 @@ async def nivel(interact: discord.Interaction):
 
     xpProximoNivel = nivel * 100
     xpFaltando = xpProximoNivel - xp
+    porcentagem = (xp / xpProximoNivel ) * 100
+
+#   FUNDO DO CARD PARA EMBED XP
+    bg = Canvas((800, 200), color="#363636")
+    editor = Editor(bg)
+
+
+#   FOTO DO USUÁRIO
+    avatarBytes = await interact.user.display_avatar.read()
+    perfil = Editor(io.BytesIO(avatarBytes).rezise(160, 160)).circle_image()
+    editor.paste(perfil, (30, 220 // 2 - 80))
+
+#   FONTES
+    fonteDestaque = font.poppins(size=40, variant="bold")
+    fonte = font.poppins(size=25, variant="regular")
+
+#   NOME DO USUÁRIO
+    editor.text((240, 40), interact.user.display_name, color="white")
+
+#   NÍVEL E XP ATUAL
+    editor.text((220, 100), f"Nível {nivel}", color="white", font=fonte)
+    editor.text((22, 140), f"{xp} / {xpProximoNivel} XP", color="white", font=fonte)
+
+#   CONTORNO DA BARRA DE XP
+    editor.rectangle((220, 180), width=500, height=500, outline="white", stroke_width=3)
+
+#   PREENCHIMENTO DA BARRA = XP ATUAL
+    editor.bar(
+        (220, 180),
+        max_width=500,
+        height=30,
+        percentage=porcentagem , 
+        color = "green",
+        radius=15
+    )
+
+#   IMAGEM PRONTA PARA O DISCORD ENVIAR
+    file = discord.File(fp=editor.image_bytes, filename="nivel.png")
 
     embed = discord.Embed(title= f"NÍVEL DE {interact.user.display_name}")
-    embed.set_thumbnail (url= interact.user.display_avatar.url)
-
-    embed.add_field(name="Nível", value=str(nivel), inline=True)
-    embed.add_field(name="XP", value=str(xp), inline=True)
-    embed.add_field(name="Quanto falta para o próximo nível?", value=f"{xpFaltando} XP", inline = False)
-
-    await interact.response.send_message(embed = embed)
+    embed.set_image(url="attachment://nivel.png")
+    embed.add_field(name="Falta para o próximo nível", value=f"{xpFaltando}", inline=False)
+    
+    await interact.response.send_message(embed = embed, file =file)
 
 #   EMBED DE COMANDOS OFICIAAIS
 @gunter.tree.command(name= "comandos", description="Todos os comandos do gunter")
