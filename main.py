@@ -112,7 +112,16 @@ async def on_message(message):
         else:
             xpAtual, nivelAtual = resultado
             novoXP = xpAtual + xpGanho
-            novoNivel = novoXP // 100 + 1
+            novoNivel = nivelAtual
+
+            xpNecessario = novoNivel * 100
+
+#   XP ACUMULADO FOR SUFICENTE PARA PASSAR DE NÍVEL(SOBE,M e pode subir mais de um nível por vez)
+
+            while novoXP >= xpNecessario:
+                novoXP -= xpNecessario
+                novoNivel += 1
+                xpNecessario = novoNivel * 100
 
             cursor.execute("""UPDATE usuarios SET xp = ?, nivel = ?, nome = ?
                             WHERE usuario = ? """,
@@ -122,7 +131,7 @@ async def on_message(message):
 
                 emojiTitle = gunter.get_emoji(1451737074536288439)
 
-                embed = discord.Embed(title= f"SUBIU DE NÍVEL {emojiTitle}", description=f"Boaa {message.author.mention}, subiu para o **{novoNivel}**")
+                embed = discord.Embed(title= f"SUBIU DE NÍVEL {emojiTitle}", description=f"Boaa {message.author.mention}, subiu para o nível **{novoNivel}**")
                 
                 embed.color = discord.Color.light_theme()
                 imagem = discord.File("imagens//brilho.jpg", "brilho.jpg")
@@ -134,8 +143,6 @@ async def on_message(message):
         conn.commit()
 
     await gunter.process_commands(message)
-
-
 
 #   SLASH COMMAND PARA MOSTRAR NÍVEL
 
@@ -177,7 +184,7 @@ async def nivel(interact: discord.Interaction):
 #   FONTES
     fonteNome = Font.poppins(size= 40, variant="bold" )
     fonteNivel = Font.poppins(size= 30)
-    fonteXp = Font.poppins(size= 24, variant="bold")
+    fonteXp =  Font.poppins(size= 24, variant="bold")
 
 #   NOME DO USUÁRIO
     editor.text((220, 40), interact.user.display_name, color="white", font=fonteNome)
