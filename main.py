@@ -14,6 +14,9 @@ import io
 conn = sqlite3.connect("sistemadexp.db")
 cursor = conn.cursor()
 
+cursor.execute("DELETE FROM usuarios WHERE id = ?", (6,))
+conn.commit()
+
 #   PERMISSOES
 permissoes = discord.Intents.default()
 permissoes.message_content = True
@@ -51,6 +54,7 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS usuarios (
                 usuario TEXT NOT NULL,
                 xp INT NOT NULL,
                 nivel INT NOT NULL)""")
+
 
 #   SISTEMA DE XP
 #organização:
@@ -98,7 +102,7 @@ async def on_message(message):
 
         cursor.execute("""SELECT xp, nivel FROM usuarios
                     WHERE usuario = ?""",
-                    (userID,))
+                    (userID, ))
         resultado = cursor.fetchone()
 
         if resultado is None:
@@ -110,22 +114,22 @@ async def on_message(message):
             novoXP = xpAtual + xpGanho
             novoNivel = novoXP // 100 + 1
 
-            cursor.execute("""UPDATE usuarios SET xp = ?, nivel = ?
-                            WHERE usuario = ?""",
-                            (novoXP, novoNivel, userID))
+            cursor.execute("""UPDATE usuarios SET xp = ?, nivel = ?, nome = ?
+                            WHERE usuario = ? """,
+                        (novoXP, novoNivel, nome, userID))
 
             if novoNivel > nivelAtual:
 
                 emojiTitle = gunter.get_emoji(1451737074536288439)
-                emojifooter = gunter.get_emoji(1450437319004917801)
 
                 embed = discord.Embed(title= f"SUBIU DE NÍVEL {emojiTitle}", description=f"Boaa {message.author.mention}, subiu para o **{novoNivel}**")
                 
                 embed.color = discord.Color.light_theme()
-                embed.set_image(url="https://br.pinterest.com/pin/311733605431742882/")
-                embed.set_footer(text= f"continue conversando para subir de nível {emojifooter}")
+                imagem = discord.File("imagens//brilho.jpg", "brilho.jpg")
+                embed.set_image(url="attachment://brilho.jpg")
+                embed.set_footer(text= f"continue conversando para subir de nível")
                 
-                await message.channel.send(embed = embed)
+                await message.channel.send(embed = embed, file= imagem)
 
         conn.commit()
 
@@ -171,24 +175,27 @@ async def nivel(interact: discord.Interaction):
     editor.paste(perfil, (30, 200 // 2 - 80))
 
 #   FONTES
-    fonteDestaque = Font.poppins(size=40, variant="bold")
-    fonte = Font.poppins(size=25, variant="regular")
+    fonteNome = Font.poppins(size= 40, variant="bold" )
+    fonteNivel = Font.poppins(size= 30)
+    fonteXp = Font.poppins(size= 24, variant="bold")
 
 #   NOME DO USUÁRIO
-    editor.text((240, 40), interact.user.display_name, color="white", Font=fonteDestaque)
+    editor.text((220, 40), interact.user.display_name, color="white", font=fonteNome)
 
-#   NÍVEL E XP ATUAL
-    editor.text((220, 100), f"Nível {nivel}", color="white", font=fonte)
-    editor.text((22, 140), f"{xp} / {xpProximoNivel} XP", color="white", Font=fonte)
+#   NÍVEL
+    editor.text((650, 20), f"NV. {nivel}", color="white", font= fonteNivel)
+
+#   XP
+    editor.text((650, 58), f"{xp} / {xpProximoNivel}", color="white", font=fonteXp)
 
 #   CONTORNO DA BARRA DE XP
-    editor.rectangle((220, 180), width=500, height=30, outline="white", stroke_width=3)
+    editor.rectangle((220, 107), width=561, height=54, outline="white", radius= 15)
 
 #   PREENCHIMENTO DA BARRA = XP ATUAL
     editor.bar(
-        (220, 180),
-        max_width=500,
-        height=30,
+        (220, 107),
+        max_width=562,
+        height=55,
         percentage=porcentagem , 
         color = "green",
         radius=15
@@ -199,7 +206,6 @@ async def nivel(interact: discord.Interaction):
 
     embed = discord.Embed(title= f"NÍVEL DE {interact.user.display_name}")
     embed.set_image(url="attachment://nivel.png")
-    embed.add_field(name="Falta para o próximo nível", value=f"{xpFaltando}", inline=False)
     
     await interact.response.send_message(embed = embed, file =file)
 
@@ -257,7 +263,7 @@ async def beta(ctx:commands.Context):
     embed = discord.Embed(title = "Beta?", description = "beta é quem me chama, cala boca e não reclama.")
     
 #   imagem do computador
-    imagemArquivo = discord.File("Documents\\botDiscord-python\\imagens\\embedBeta", "beta.jpg")
+    imagemArquivo = discord.File("imagens\\embedBeta", "beta.jpg")
     embed.set_image(url = "attachment://beta.jpg")
 
     await ctx.reply(file = imagemArquivo, embed = embed)
@@ -268,11 +274,11 @@ async def insta(ctx:commands.Context):
     embed = discord.Embed(title = "INSTA", description = "segue lá :)")
 
 #   IMAGEM
-    imagemInsta = discord.File("Documents\\botDiscord-python\\imagens\\whatsappinsta.jpeg", "insta.jpeg")
+    imagemInsta = discord.File("imagens\\whatsappinsta.jpeg", "insta.jpeg")
     embed.set_image(url = "attachment://insta.jpeg")
 
 #   THUMB
-    thumb = discord.File("Documents\\botDiscord-python\\imagens\\logoInsta.png", "logo.png")
+    thumb = discord.File("imagens\\logoInsta.png", "logo.png")
     embed.set_thumbnail(url = "attachment://logo.png")
 
 #   FOOTER
