@@ -7,7 +7,7 @@ from discord import app_commands
 import sqlite3
 import time
 import easy_pil
-from easy_pil import Editor, font, Canvas
+from easy_pil import Editor, Font, Canvas
 import io
 
 #   SQL
@@ -171,15 +171,15 @@ async def nivel(interact: discord.Interaction):
     editor.paste(perfil, (30, 200 // 2 - 80))
 
 #   FONTES
-    fonteDestaque = font.poppins(size=40, variant="bold")
-    fonte = font.poppins(size=25, variant="regular")
+    fonteDestaque = Font.poppins(size=40, variant="bold")
+    fonte = Font.poppins(size=25, variant="regular")
 
 #   NOME DO USUÁRIO
-    editor.text((240, 40), interact.user.display_name, color="white", font=fonteDestaque)
+    editor.text((240, 40), interact.user.display_name, color="white", Font=fonteDestaque)
 
 #   NÍVEL E XP ATUAL
     editor.text((220, 100), f"Nível {nivel}", color="white", font=fonte)
-    editor.text((22, 140), f"{xp} / {xpProximoNivel} XP", color="white", font=fonte)
+    editor.text((22, 140), f"{xp} / {xpProximoNivel} XP", color="white", Font=fonte)
 
 #   CONTORNO DA BARRA DE XP
     editor.rectangle((220, 180), width=500, height=30, outline="white", stroke_width=3)
