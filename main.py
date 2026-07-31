@@ -247,6 +247,12 @@ async def nivel(interact: discord.Interaction):
 
 # ----------------------------------------------------------------------EMBED DE COMANDOS OFICIAAIS---#
 @gunter.tree.command(name= "comandos", description="Todos os comandos do gunter")
+async def rank(interact:discord.Interaction):
+    
+# edição da tabela:
+    bg = Canvas.
+
+
 async def comandos(interact: discord.Interaction):
     emoji = gunter.get_emoji(1450437319004917801)
     embed = discord.Embed (title= f"COMANDOOS {emoji}", description= "aqui era p estar os comandos ne")
@@ -258,6 +264,10 @@ async def comandos(interact: discord.Interaction):
     embed.set_footer(text="scripted by: nalu")
 
     await interact.response.send_message(embed= embed, ephemeral= True)
+
+#===================================================RANK DE NÍVEIS============#
+
+@gunter.tree.command(name="rank", description="mostra o rank dos níveis")
 
 #   COMANDO BÁSICO DE RESPOSTA
 @gunter.command()
