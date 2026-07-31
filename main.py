@@ -1,38 +1,44 @@
-#   BIBLIOTECA
+#=======================================IMPORT==========#
+
 import discord 
+from discord import app_commands
 from discord.ext import commands
+
 import meuToken
 from meuToken import meuToken
-from discord import app_commands
+
 import sqlite3
+
 import time
+
 import easy_pil
 from easy_pil import Editor, Font, Canvas
 import io
 
-#   SQL
+
+#===============================================SQL======#
+
 conn = sqlite3.connect("sistemadexp.db")
 cursor = conn.cursor()
+#========================================================#
 
-cursor.execute("DELETE FROM usuarios WHERE id = ?", (6,))
-conn.commit()
 
-#   PERMISSOES
+# ==========================================PERMISSOES===#
 permissoes = discord.Intents.default()
 permissoes.message_content = True
 permissoes.members = True
 
-#   PREFIXO PARA ATIVAR O GUNTER 
+#=========================PREFIXO PARA ATIVAR O GUNTER===#
 gunter = commands.Bot(command_prefix = "!", intents = permissoes)
 
-#   QUANDO O GUNTER LIGAR
+#====================================QUANDO O GUNTER LIGAR#
 @gunter.event
 async def on_ready():
     await gunter.tree.sync()
     print("Gunter funcionando")
 
 
-#   MENSAGEM NO CANAL QUANDO ESTIVER FUNCIONANDO
+#mensagem quando liga:
     canalID = 1526599234005241977
     canal = gunter.get_channel(canalID)
 
@@ -47,7 +53,7 @@ async def on_ready():
 
         await canal.send(embed = embed)
 
-#  TABELA PARA XP
+#===================================================TABELA PARA XP=====#
 cursor.execute("""CREATE TABLE IF NOT EXISTS usuarios (
                 id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                 nome TEXT NOT NULL,
@@ -56,13 +62,13 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS usuarios (
                 nivel INT NOT NULL)""")
 
 
-#   SISTEMA DE XP
-#organização:
+# ===================================================SISTEMA DE XP====#
+#cooldown:
 cooldowns = {}
-COOLDOWN_SEGUNDOS = 60
+COOLDOWN_SEGUNDOS = 30
 xpImagem = 15
 
-#   VERIFICA SE TEM IMAGEM - QUE TAMBEM CONTAM COMO XP
+# verifica se tem imagem (que tambem contam como xp):
 def temImagem(message):
     if not message.attachments:
         return False
@@ -73,42 +79,62 @@ def temImagem(message):
             return True
     return False
 
-
+# xp por caractere de mensagem:
 @gunter.event
 async def on_message(message):
     if message.author.bot:
         return
 
+#   dados do author:
     nome = str(message.author.display_name)
     userID = str(message.author.id)
+
     agora = time.time()
 
+# calculo de cooldown:
     if userID in cooldowns and agora - cooldowns[userID] < COOLDOWN_SEGUNDOS:
         pass
     else:
+
+#   atualiza o tempo do cooldown:
         cooldowns[userID] = agora
+
+# calculo xp:
         xpGanho = 0
 
-        if temImagem(message):
+# adição de xp das
+        if temImagem(message): 
+# é o mesmo que escrever:
+#       resultado = temImagem(message)
+#       if resultado == True:
+    
             xpGanho += xpImagem
+# é o mesmo que escrever:
+#       xpGanho = xpGanho + xpImagem
 
-        # xp baseado no tamanho da mensagem
+# xp baseado no tamanho da mensagem:
         tamanhoMensagem = len(message.content)
         xpGanho += tamanhoMensagem
 
+# return de segurança:
         if xpGanho == 0:
             await gunter.process_commands(message)
             return
 
         cursor.execute("""SELECT xp, nivel FROM usuarios
                     WHERE usuario = ?""",
-                    (userID, ))
-        resultado = cursor.fetchone()
+                    (userID, )) 
+#               "?" = placeholder de busca objetiva(nesse caso, o ID do usuário)
 
+        resultado = cursor.fetchone() # traz o resultado para o código
+
+#       se o usuário ainda não esta registrado no banco:
         if resultado is None:
             cursor.execute("""INSERT INTO usuarios (nome, usuario, xp, nivel)
                             VALUES (?, ?, ?, ?)""",
                             (nome, userID, xpGanho, 1))
+
+#       se o usuário já estiver no banco:
         else:
             xpAtual, nivelAtual = resultado
             novoXP = xpAtual + xpGanho
@@ -116,17 +142,18 @@ async def on_message(message):
 
             xpNecessario = novoNivel * 100
 
-#   XP ACUMULADO FOR SUFICENTE PARA PASSAR DE NÍVEL(SOBE,M e pode subir mais de um nível por vez)
-
+#           cálculo de nível:
             while novoXP >= xpNecessario:
                 novoXP -= xpNecessario
                 novoNivel += 1
                 xpNecessario = novoNivel * 100
 
+#           atualiza os dados do banco:
             cursor.execute("""UPDATE usuarios SET xp = ?, nivel = ?, nome = ?
                             WHERE usuario = ? """,
                         (novoXP, novoNivel, nome, userID))
 
+#           embed para nívgel avançado:
             if novoNivel > nivelAtual:
 
                 emojiTitle = gunter.get_emoji(1451737074536288439)
@@ -144,7 +171,7 @@ async def on_message(message):
 
     await gunter.process_commands(message)
 
-#   SLASH COMMAND PARA MOSTRAR NÍVEL
+#===================================================SLASH COMMAND PARA MOSTRAR NÍVEL=======#
 
 @gunter.tree.command(name="nivel", description="mostra seu nível atual e xp")
 async def nivel(interact: discord.Interaction):
@@ -157,6 +184,7 @@ async def nivel(interact: discord.Interaction):
 
     resultado = cursor.fetchone()
 
+#   se o usuário ainda não está no banco:
     if resultado is None:
         embed = discord.Embed(title="Nunca te vi por aqui", description="Por isso, você ainda não tem xp")
         embed.color =  discord.Color.light_theme()
@@ -165,40 +193,38 @@ async def nivel(interact: discord.Interaction):
         await interact.response.send_message(embed = embed, ephemeral = True)
         return
 
+#   se o usuário está no banco:
     xp, nivel = resultado
-
     xpProximoNivel = nivel * 100
-    xpFaltando = xpProximoNivel - xp
     porcentagem = (xp / xpProximoNivel ) * 100
 
-#   FUNDO DO CARD PARA EMBED XP
+# fundo do card:
     bg = Canvas((800, 200), color="#363636")
     editor = Editor(bg)
 
-
-#   FOTO DO USUÁRIO
+# foto do usuário:
     avatarBytes = await interact.user.display_avatar.read()
     perfil = Editor(avatarBytes).resize((160, 160)).circle_image()
     editor.paste(perfil, (30, 200 // 2 - 80))
 
-#   FONTES
+# fontes:
     fonteNome = Font.poppins(size= 40, variant="bold" )
     fonteNivel = Font.poppins(size= 30)
     fonteXp =  Font.poppins(size= 24, variant="bold")
 
-#   NOME DO USUÁRIO
+# nome do usuário:
     editor.text((220, 40), interact.user.display_name, color="white", font=fonteNome)
 
-#   NÍVEL
+# nível:
     editor.text((650, 20), f"NV. {nivel}", color="white", font= fonteNivel)
 
-#   XP
+# xp:
     editor.text((650, 58), f"{xp} / {xpProximoNivel}", color="white", font=fonteXp)
 
-#   CONTORNO DA BARRA DE XP
+# contorno da barra de xp
     editor.rectangle((220, 107), width=561, height=54, outline="white", radius= 15)
 
-#   PREENCHIMENTO DA BARRA = XP ATUAL
+# preenchimento da barra de xp
     editor.bar(
         (220, 107),
         max_width=562,
@@ -208,15 +234,18 @@ async def nivel(interact: discord.Interaction):
         radius=15
     )
 
-#   IMAGEM PRONTA PARA O DISCORD ENVIAR
+# card pronto:
     file = discord.File(fp=editor.image_bytes, filename="nivel.png")
 
     embed = discord.Embed(title= f"NÍVEL DE {interact.user.display_name}")
     embed.set_image(url="attachment://nivel.png")
+
+#   cor da embed personalizada:   
+    embed.color = interact.user.color if interact.user.color != discord.Color.default() else discord.Color.light_theme()
     
     await interact.response.send_message(embed = embed, file =file)
 
-#   EMBED DE COMANDOS OFICIAAIS
+# ----------------------------------------------------------------------EMBED DE COMANDOS OFICIAAIS---#
 @gunter.tree.command(name= "comandos", description="Todos os comandos do gunter")
 async def comandos(interact: discord.Interaction):
     emoji = gunter.get_emoji(1450437319004917801)
@@ -229,7 +258,6 @@ async def comandos(interact: discord.Interaction):
     embed.set_footer(text="scripted by: nalu")
 
     await interact.response.send_message(embed= embed, ephemeral= True)
-
 
 #   COMANDO BÁSICO DE RESPOSTA
 @gunter.command()
