@@ -247,12 +247,6 @@ async def nivel(interact: discord.Interaction):
 
 # ----------------------------------------------------------------------EMBED DE COMANDOS OFICIAAIS---#
 @gunter.tree.command(name= "comandos", description="Todos os comandos do gunter")
-async def rank(interact:discord.Interaction):
-    
-# edição da tabela:
-    bg = Canvas.
-
-
 async def comandos(interact: discord.Interaction):
     emoji = gunter.get_emoji(1450437319004917801)
     embed = discord.Embed (title= f"COMANDOOS {emoji}", description= "aqui era p estar os comandos ne")
@@ -270,11 +264,37 @@ async def comandos(interact: discord.Interaction):
 @gunter.tree.command(name="rank", description="mostra o rank dos níveis")
 async def rank(interact:discord.Interaction):
 
-    # fundo do card
-    bg = Canvas((492, 1000), color="363636")
+    # dadps da tabela:
+    SELECT usuario, xp, nivel FROM usuarios
+    ORDER BY nivel DESC, xp DESC
+    LIMIT 5
+
+    cursor.execute("""SELECT usuario, xp, nivel FROM usuarios
+                    ORDER BY nivel DESC, xp DESC
+                    LIMIT 5""")
+
+    top5= cursor.fetchall() # para salvar várias tuplas
+
+    if not top5:
+        embed = discord.Embed(title="OOXE", description="ainda não há ninguém no seu rank")
+        await.interact.response.send_message(embed = embed)
+        return
+
+    await interact.response.defer()
+
+        # fundo do card
+    bg = Canvas((492, 1000), color="363636", radius=15)
     editor = Editor(bg)
 
+    edito.paste(())
+
+    # fontes usadas:
+    fonteColocacao = Font.poppins(size=48, variant="bold")
+    fonteNome = Font.poppins(size=40, variant="regular")
+    fonteNivel = Font.poppins(size=36, variant="bold")
+    
     #imagem de perfil:
+    
 
 
 #   COMANDO BÁSICO DE RESPOSTA
