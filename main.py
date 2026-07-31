@@ -268,6 +268,14 @@ async def comandos(interact: discord.Interaction):
 #===================================================RANK DE NÍVEIS============#
 
 @gunter.tree.command(name="rank", description="mostra o rank dos níveis")
+async def rank(interact:discord.Interaction):
+
+    # fundo do card
+    bg = Canvas((492, 1000), color="363636")
+    editor = Editor(bg)
+
+    #imagem de perfil:
+
 
 #   COMANDO BÁSICO DE RESPOSTA
 @gunter.command()
