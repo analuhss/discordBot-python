@@ -282,18 +282,19 @@ async def rank(interact:discord.Interaction):
 
     await interact.response.defer()
 
-        # fundo do card
-    bg = Canvas((492, 1000), color="363636", radius=15)
-    editor = Editor(bg)
-
-    edito.paste(())
-
-    # fontes usadas:
-    fonteColocacao = Font.poppins(size=48, variant="bold")
+       #imagem do fundo
+    editor = Editor("imagens/rank.jpg")
+    
     fonteNome = Font.poppins(size=40, variant="regular")
-    fonteNivel = Font.poppins(size=36, variant="bold")
+    fonteNivel = Font.poppins(size=36, variant="regular")
     
     #imagem de perfil:
+    posicoes = {
+        1: {"avatar": (151, 39), "tamanho": (136, 136), "nome": (327, 40), "nivel": (327, 90)}
+        2: {"avatar": (151, 235), "tamanho": (136, 136), "nome": (327, 238), "nivel": (327, 289)}
+        3: {"avatar": (151, 430), "tamanho": (136, 136), "nome": (327, 432), "nivel": (327, 488)}
+        4: {"avatar": (139, 616), "tamanho": (160, 160), "nome": (327, 628), "nivel": (327)}
+    }
     
 
 
@@ -301,7 +302,7 @@ async def rank(interact:discord.Interaction):
 @gunter.command()
 async def Gunter(ctx:commands.Context):
     nomeUsuario = ctx.author.display_name
-    await ctx.reply(f"to aqui {nomeUsuario} :) ")
+    await ctx.reply(f"to aqui {nomeUsuario} :)")
 
 # MENSAGEM PARA CRIAÇÃO DE CANAIS
 @gunter.event
