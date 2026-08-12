@@ -1,4 +1,4 @@
-<img src = "imagens\readmeGunter.jpg">
+<img src = "imagens\headergunter.svg">
 
 <h2>
             &nbsp;&nbsp;&nbsp;&nbsp;O QUE É?
