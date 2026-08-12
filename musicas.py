@@ -19,3 +19,28 @@ ffmepegOptions = {
     "options": "-vn",
     # No vídeo, descarta qualquer faixa de vídeo, já que só queremos o áudio
 }
+
+# FILA DE MÚSICAS POR SERVIDOR (id_guild -> lista de url_audio, titulo)
+filas: dict[int, list[tuple[str]]] = {}
+
+def registrarComandosMusica(gunter: discord.Client):
+    # registra os comandos de música na árvore de comandos
+
+def getFila(guild_id: int) -> list: #se o servidor nao tem uma lista ele cria uma
+    if guild_id not in filas:
+        filas[guild_id] = []
+    return filas[guild_id]
+
+def tocarProxima(guild: discord.Guild):
+    fila = getFila(guild.id)
+    vc = guild.voice_client
+
+    if not fila or vc is None:
+        return
+    
+    fonte = discord.FFmpegPCMAudio(url_audio,**ffmepegOptions)
+    vc.play(fonte, after=lambda erro: tocarProxima(guild))
+
+    # ENTRAR NO CANAL DE VOZ
+
+
